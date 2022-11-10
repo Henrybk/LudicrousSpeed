@@ -26,7 +26,8 @@ public class PotionCommand implements Command {
     }
 
     public PotionCommand(int potionIndex) {
-        this(potionIndex, -1);
+		this.potionIndex = potionIndex;
+        this.monsterIndex = -1;
     }
 
     public PotionCommand(String jsonString) {
