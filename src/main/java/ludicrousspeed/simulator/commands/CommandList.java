@@ -145,33 +145,7 @@ public final class CommandList {
             for (int i = 0; i < AbstractDungeon.gridSelectScreen.targetGroup.size(); i++) {
                 AbstractCard card = AbstractDungeon.gridSelectScreen.targetGroup.group.get(i);
                 if (!card.isGlowing) {
-                    // Weak hack to only scry basics curses and statuses
-                    boolean canClick = true;
-
-                    if (AbstractDungeon.actionManager.currentAction instanceof ScryAction) {
-                        canClick = false;
-                        if (card.type == AbstractCard.CardType.STATUS) {
-                            if (card.cardID != Dazed.ID && card.cardID != VoidCard.ID) {
-                                canClick = true;
-                            }
-                        }
-
-                        if (card.type == AbstractCard.CardType.CURSE) {
-                            if (card.cardID != Clumsy.ID) {
-                                canClick = true;
-                            }
-                        }
-
-                        if (card.hasTag(AbstractCard.CardTags.STARTER_DEFEND) || card
-                                .hasTag(AbstractCard.CardTags.STARTER_STRIKE)) {
-                            canClick = true;
-                        }
-                    }
-
-
-                    if (canClick) {
-                        commands.add(new GridSelectCommand(i));
-                    }
+                    commands.add(new GridSelectCommand(i));
                 }
             }
 
