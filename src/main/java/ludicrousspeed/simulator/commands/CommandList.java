@@ -16,6 +16,8 @@ import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.screens.select.GridCardSelectScreen;
 import com.megacrit.cardcrawl.ui.buttons.CardSelectConfirmButton;
 import com.megacrit.cardcrawl.ui.buttons.GridSelectConfirmButton;
+import com.megacrit.cardcrawl.ui.buttons.SkipCardButton;
+import com.megacrit.cardcrawl.screens.CardRewardScreen;
 import savestate.PotionState;
 
 import java.util.*;
@@ -158,6 +160,10 @@ public final class CommandList {
             for (int i = 0; i < AbstractDungeon.cardRewardScreen.rewardGroup.size(); i++) {
                 commands.add(new CardRewardSelectCommand(i));
             }
+			
+			if (isCardRewardSkipButtonEnabled()) {
+                commands.add(CardRewardSkipCommand.INSTANCE);
+            }
         }
 
 
@@ -199,6 +205,16 @@ public final class CommandList {
                 AbstractDungeon.getCurrRoom().phase == AbstractRoom.RoomPhase.COMBAT &&
                 AbstractDungeon.isScreenUp &&
                 AbstractDungeon.screen == AbstractDungeon.CurrentScreen.CARD_REWARD;
+    }
+
+    private static boolean isCardRewardSkipButtonEnabled() {
+		CardRewardScreen screen = AbstractDungeon.cardRewardScreen;
+		
+		SkipCardButton button = ReflectionHacks.getPrivate(screen, CardRewardScreen.class, "skipButton");
+		
+		boolean isHidden = ReflectionHacks.getPrivate(button, SkipCardButton.class, "isHidden");
+		
+		return !(isHidden);
     }
 
     private static boolean isInHandSelect() {

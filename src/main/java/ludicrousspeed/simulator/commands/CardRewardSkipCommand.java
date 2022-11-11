@@ -9,50 +9,42 @@ import com.megacrit.cardcrawl.actions.GameActionManager;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.screens.CardRewardScreen;
-import javassist.CannotCompileException;
-import javassist.CtBehavior;
+import com.megacrit.cardcrawl.ui.buttons.SkipCardButton;
 
-import java.util.ArrayList;
-
-public class CardRewardSelectCommand implements Command {
-    int cardIndex;
+public class CardRewardSkipCommand implements Command {
+    public static final CardRewardSkipCommand INSTANCE = new CardRewardSkipCommand();
     private static boolean ignoreHoverLogic = false;
-
-    public CardRewardSelectCommand(int cardIndex) {
-        this.cardIndex = cardIndex;
-    }
-
-    public CardRewardSelectCommand(String jsonString) {
-        JsonObject parsed = new JsonParser().parse(jsonString).getAsJsonObject();
-
-        this.cardIndex = parsed.get("card_index").getAsInt();
-    }
 
     @Override
     public void execute() {
-		CardRewardScreen screen = AbstractDungeon.cardRewardScreen;
+        CardRewardScreen screen = AbstractDungeon.cardRewardScreen;
 		
-        AbstractCard target = screen.rewardGroup.get(cardIndex);
+		SkipCardButton button = ReflectionHacks.getPrivate(screen, CardRewardScreen.class, "skipButton");
 		
-        target.hb.hovered = true;
-        target.hb.clicked = true;
+		boolean isHidden = ReflectionHacks.getPrivate(button, SkipCardButton.class, "isHidden");
+		if (isHidden) {
+			System.err.println("CardRewardSkipCommand skip button should not be hidden");
+			ReflectionHacks.setPrivate(button, SkipCardButton.class, "isHidden", false);
+		}
+		
+		button.hb.clicked = true;
 		
         ignoreHoverLogic = true;
         screen.update();
         ignoreHoverLogic = false;
 		
 		if (AbstractDungeon.isScreenUp) {
-            System.err.println("CardRewardSelectCommand screen didn't close after selecting card");
+            System.err.println("CardRewardSkipCommand screen didn't close after pressing skip button");
 			//AbstractDungeon.closeCurrentScreen();
         }
 		
-		if (target.hb.clicked) {
-            System.err.println("CardRewardSelectCommand should have unclicked");
+		if (button.hb.clicked) {
+            System.err.println("CardRewardSkipCommand skip button should have unclicked");
         }
 		
 		boolean isDiscovery = ReflectionHacks.getPrivate(screen, CardRewardScreen.class, "discovery");
-		if (isDiscovery && !(screen.discoveryCard != null)) {
-			System.err.println("CardRewardSelectCommand discoveryCard should not be null");
+		if (isDiscovery && screen.discoveryCard != null) {
+			System.err.println("CardRewardSkipCommand discoveryCard should be null");
 		}
     }
 
@@ -60,15 +52,14 @@ public class CardRewardSelectCommand implements Command {
     public String encode() {
         JsonObject cardCommandJson = new JsonObject();
 
-        cardCommandJson.addProperty("type", "CARD_REWARD_SELECT");
-        cardCommandJson.addProperty("card_index", cardIndex);
+        cardCommandJson.addProperty("type", "CARD_REWARD_SKIP");
 
         return cardCommandJson.toString();
     }
 
     @Override
     public String toString() {
-        return "CardRewardSelectCommand" + cardIndex;
+        return "CardRewardSkip";
     }
 
     // The Grid Select Screen checks to see where the cursor is at during update, disable
