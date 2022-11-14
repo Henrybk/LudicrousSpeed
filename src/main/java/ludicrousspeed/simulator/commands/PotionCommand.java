@@ -17,18 +17,14 @@ import java.util.stream.Collectors;
 public class PotionCommand implements Command {
     private final int potionIndex;
     private final int monsterIndex;
+    private final int discard;
 
     private String diffStateString = null;
 
-    public PotionCommand(int potionIndex, int monsterIndex) {
+    public PotionCommand(int potionIndex, int monsterIndex, int discard) {
         this.potionIndex = potionIndex;
         this.monsterIndex = monsterIndex;
-    }
-
-    public PotionCommand(int potionIndex) {
-		this(potionIndex, -1);
-		//this.potionIndex = potionIndex;
-        //this.monsterIndex = -1;
+        this.discard = discard;
     }
 
     public PotionCommand(String jsonString) {
@@ -36,6 +32,7 @@ public class PotionCommand implements Command {
 
         this.potionIndex = parsed.get("potion_index").getAsInt();
         this.monsterIndex = parsed.get("monster_index").getAsInt();
+        this.discard = parsed.get("discard").getAsInt();
     }
 
     public PotionCommand(String jsonString, String diffStateString) {
@@ -43,6 +40,7 @@ public class PotionCommand implements Command {
 
         this.potionIndex = parsed.get("potion_index").getAsInt();
         this.monsterIndex = parsed.get("monster_index").getAsInt();
+        this.discard = parsed.get("discard").getAsInt();
 
         this.diffStateString = diffStateString;
     }
@@ -73,18 +71,18 @@ public class PotionCommand implements Command {
 
 
         AbstractPotion potion = AbstractDungeon.player.potions.get(potionIndex);
-        AbstractCreature target = AbstractDungeon.player;
-
-        if (monsterIndex != -1) {
-            target = AbstractDungeon.getMonsters().monsters.get(monsterIndex);
-            if (!LudicrousSpeedMod.plaidMode) {
-                String allMonsters = AbstractDungeon.getMonsters().monsters.stream().map(m -> String
-                        .format("hp:%s\t", m.currentHealth)).collect(Collectors.joining());
-            }
-        }
-
-        potion.use(target);
-        AbstractDungeon.player.relics.forEach(relic -> relic.onUsePotion());
+		if (discard == 0) {
+			AbstractCreature target = AbstractDungeon.player;
+			if (monsterIndex != -1) {
+				target = AbstractDungeon.getMonsters().monsters.get(monsterIndex);
+				if (!LudicrousSpeedMod.plaidMode) {
+					String allMonsters = AbstractDungeon.getMonsters().monsters.stream().map(m -> String
+							.format("hp:%s\t", m.currentHealth)).collect(Collectors.joining());
+				}
+			}
+			potion.use(target);
+			AbstractDungeon.player.relics.forEach(relic -> relic.onUsePotion());
+		}
 
         AbstractDungeon.topPanel.destroyPotion(potionIndex);
 
@@ -97,7 +95,7 @@ public class PotionCommand implements Command {
 
     @Override
     public String toString() {
-        return "Potion " + potionIndex + " " + monsterIndex;
+        return "Potion " + potionIndex + " " + monsterIndex + " " + discard;
     }
 
     @Override
@@ -108,6 +106,7 @@ public class PotionCommand implements Command {
 
         cardCommandJson.addProperty("potion_index", potionIndex);
         cardCommandJson.addProperty("monster_index", monsterIndex);
+        cardCommandJson.addProperty("discard", discard);
 
         return cardCommandJson.toString();
     }

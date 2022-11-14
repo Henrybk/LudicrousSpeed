@@ -78,30 +78,34 @@ public final class CommandList {
 
             for (int i = 0; i < potions.size(); i++) {
                 AbstractPotion potion = potions.get(i);
-                if (!potion
-                        .canUse() || !potion.isObtained || potion instanceof PotionSlot || PotionState.UNPLAYABLE_POTIONS
-                        .contains(potion.ID)) {
+                if (!potion.isObtained || potion instanceof PotionSlot) {
                     continue;
                 }
-
-                // Dedupe potions
-                String setName = potion.name;
-                int oldCount = seenCommands.size();
-                seenCommands.add(setName);
-                if (oldCount == seenCommands.size()) {
-                    continue;
-                }
-
-                if (potion.targetRequired) {
-                    for (int j = 0; j < monsters.size(); j++) {
-                        AbstractMonster monster = monsters.get(j);
-                        if (!monster.isDeadOrEscaped()) {
-                            commands.add(new PotionCommand(i, j));
-                        }
-                    }
-                } else {
-                    commands.add(new PotionCommand(i));
-                }
+				
+				// Dedupe potions
+				String setName = potion.name;
+				int oldCount = seenCommands.size();
+				seenCommands.add(setName);
+				if (oldCount == seenCommands.size()) {
+					continue;
+				}
+				
+				if (potion.canUse() && !(PotionState.UNPLAYABLE_POTIONS.contains(potion.ID))) {
+					if (potion.targetRequired) {
+						for (int j = 0; j < monsters.size(); j++) {
+							AbstractMonster monster = monsters.get(j);
+							if (!monster.isDeadOrEscaped()) {
+								commands.add(new PotionCommand(i, j, 0));
+							}
+						}
+					} else {
+						commands.add(new PotionCommand(i, -1, 0));
+					}
+				}
+				
+				if (potion.canDiscard()) {
+					commands.add(new PotionCommand(i, -1, 1));
+				}
             }
         }
 
