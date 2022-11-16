@@ -81,31 +81,31 @@ public final class CommandList {
                 if (!potion.isObtained || potion instanceof PotionSlot) {
                     continue;
                 }
-				
-				// Dedupe potions
-				String setName = potion.name;
-				int oldCount = seenCommands.size();
-				seenCommands.add(setName);
-				if (oldCount == seenCommands.size()) {
-					continue;
-				}
-				
-				if (potion.canUse() && !(PotionState.UNPLAYABLE_POTIONS.contains(potion.ID))) {
-					if (potion.targetRequired) {
-						for (int j = 0; j < monsters.size(); j++) {
-							AbstractMonster monster = monsters.get(j);
-							if (!monster.isDeadOrEscaped()) {
-								commands.add(new PotionCommand(i, j, 0));
-							}
-						}
-					} else {
-						commands.add(new PotionCommand(i, -1, 0));
-					}
-				}
-				
-				if (potion.canDiscard()) {
-					commands.add(new PotionCommand(i, -1, 1));
-				}
+                
+                // Dedupe potions
+                String setName = potion.name;
+                int oldCount = seenCommands.size();
+                seenCommands.add(setName);
+                if (oldCount == seenCommands.size()) {
+                    continue;
+                }
+                
+                if (potion.canUse() && !(PotionState.UNPLAYABLE_POTIONS.contains(potion.ID))) {
+                    if (potion.targetRequired) {
+                        for (int j = 0; j < monsters.size(); j++) {
+                            AbstractMonster monster = monsters.get(j);
+                            if (!monster.isDeadOrEscaped()) {
+                                commands.add(new PotionCommand(i, j, 0));
+                            }
+                        }
+                    } else {
+                        commands.add(new PotionCommand(i, -1, 0));
+                    }
+                }
+                
+                if (potion.canDiscard()) {
+                    commands.add(new PotionCommand(i, -1, 1));
+                }
             }
         }
 
@@ -164,8 +164,8 @@ public final class CommandList {
             for (int i = 0; i < AbstractDungeon.cardRewardScreen.rewardGroup.size(); i++) {
                 commands.add(new CardRewardSelectCommand(i));
             }
-			
-			if (isCardRewardSkipButtonEnabled()) {
+            
+            if (isCardRewardSkipButtonEnabled()) {
                 commands.add(CardRewardSkipCommand.INSTANCE);
             }
         }
@@ -212,13 +212,13 @@ public final class CommandList {
     }
 
     private static boolean isCardRewardSkipButtonEnabled() {
-		CardRewardScreen screen = AbstractDungeon.cardRewardScreen;
-		
-		SkipCardButton button = ReflectionHacks.getPrivate(screen, CardRewardScreen.class, "skipButton");
-		
-		boolean isHidden = ReflectionHacks.getPrivate(button, SkipCardButton.class, "isHidden");
-		
-		return !(isHidden);
+        CardRewardScreen screen = AbstractDungeon.cardRewardScreen;
+        
+        SkipCardButton button = ReflectionHacks.getPrivate(screen, CardRewardScreen.class, "skipButton");
+        
+        boolean isHidden = ReflectionHacks.getPrivate(button, SkipCardButton.class, "isHidden");
+        
+        return !(isHidden);
     }
 
     private static boolean isInHandSelect() {

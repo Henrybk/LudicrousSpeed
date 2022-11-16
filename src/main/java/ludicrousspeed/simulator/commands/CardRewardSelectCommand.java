@@ -1,8 +1,9 @@
 package ludicrousspeed.simulator.commands;
 
 import basemod.ReflectionHacks;
-import com.evacipated.cardcrawl.modthespire.lib.*;
-import com.evacipated.cardcrawl.modthespire.patcher.PatchingException;
+import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
+import com.evacipated.cardcrawl.modthespire.lib.SpirePrefixPatch;
+import com.evacipated.cardcrawl.modthespire.lib.SpireReturn;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.megacrit.cardcrawl.actions.GameActionManager;
@@ -30,30 +31,30 @@ public class CardRewardSelectCommand implements Command {
 
     @Override
     public void execute() {
-		CardRewardScreen screen = AbstractDungeon.cardRewardScreen;
-		
+        CardRewardScreen screen = AbstractDungeon.cardRewardScreen;
+        
         AbstractCard target = screen.rewardGroup.get(cardIndex);
-		
+        
         target.hb.hovered = true;
         target.hb.clicked = true;
-		
+        
         ignoreHoverLogic = true;
         screen.update();
         ignoreHoverLogic = false;
-		
-		if (AbstractDungeon.isScreenUp) {
+        
+        if (AbstractDungeon.isScreenUp) {
             System.err.println("CardRewardSelectCommand screen didn't close after selecting card");
-			//AbstractDungeon.closeCurrentScreen();
+            //AbstractDungeon.closeCurrentScreen();
         }
-		
-		if (target.hb.clicked) {
+        
+        if (target.hb.clicked) {
             System.err.println("CardRewardSelectCommand should have unclicked");
         }
-		
-		boolean isDiscovery = ReflectionHacks.getPrivate(screen, CardRewardScreen.class, "discovery");
-		if (isDiscovery && !(screen.discoveryCard != null)) {
-			System.err.println("CardRewardSelectCommand discoveryCard should not be null");
-		}
+        
+        boolean isDiscovery = ReflectionHacks.getPrivate(screen, CardRewardScreen.class, "discovery");
+        if (isDiscovery && !(screen.discoveryCard != null)) {
+            System.err.println("CardRewardSelectCommand discoveryCard should not be null");
+        }
     }
 
     @Override

@@ -1,8 +1,9 @@
 package ludicrousspeed.simulator.commands;
 
 import basemod.ReflectionHacks;
-import com.evacipated.cardcrawl.modthespire.lib.*;
-import com.evacipated.cardcrawl.modthespire.patcher.PatchingException;
+import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
+import com.evacipated.cardcrawl.modthespire.lib.SpirePrefixPatch;
+import com.evacipated.cardcrawl.modthespire.lib.SpireReturn;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.megacrit.cardcrawl.actions.GameActionManager;
@@ -18,34 +19,34 @@ public class CardRewardSkipCommand implements Command {
     @Override
     public void execute() {
         CardRewardScreen screen = AbstractDungeon.cardRewardScreen;
-		
-		SkipCardButton button = ReflectionHacks.getPrivate(screen, CardRewardScreen.class, "skipButton");
-		
-		boolean isHidden = ReflectionHacks.getPrivate(button, SkipCardButton.class, "isHidden");
-		if (isHidden) {
-			System.err.println("CardRewardSkipCommand skip button should not be hidden");
-			ReflectionHacks.setPrivate(button, SkipCardButton.class, "isHidden", false);
-		}
-		
-		button.hb.clicked = true;
-		
+        
+        SkipCardButton button = ReflectionHacks.getPrivate(screen, CardRewardScreen.class, "skipButton");
+        
+        boolean isHidden = ReflectionHacks.getPrivate(button, SkipCardButton.class, "isHidden");
+        if (isHidden) {
+            System.err.println("CardRewardSkipCommand skip button should not be hidden");
+            ReflectionHacks.setPrivate(button, SkipCardButton.class, "isHidden", false);
+        }
+        
+        button.hb.clicked = true;
+        
         ignoreHoverLogic = true;
         screen.update();
         ignoreHoverLogic = false;
-		
-		if (AbstractDungeon.isScreenUp) {
+        
+        if (AbstractDungeon.isScreenUp) {
             System.err.println("CardRewardSkipCommand screen didn't close after pressing skip button");
-			//AbstractDungeon.closeCurrentScreen();
+            //AbstractDungeon.closeCurrentScreen();
         }
-		
-		if (button.hb.clicked) {
+        
+        if (button.hb.clicked) {
             System.err.println("CardRewardSkipCommand skip button should have unclicked");
         }
-		
-		boolean isDiscovery = ReflectionHacks.getPrivate(screen, CardRewardScreen.class, "discovery");
-		if (isDiscovery && screen.discoveryCard != null) {
-			System.err.println("CardRewardSkipCommand discoveryCard should be null");
-		}
+        
+        boolean isDiscovery = ReflectionHacks.getPrivate(screen, CardRewardScreen.class, "discovery");
+        if (isDiscovery && screen.discoveryCard != null) {
+            System.err.println("CardRewardSkipCommand discoveryCard should be null");
+        }
     }
 
     @Override

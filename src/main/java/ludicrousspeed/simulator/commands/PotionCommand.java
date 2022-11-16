@@ -71,18 +71,18 @@ public class PotionCommand implements Command {
 
 
         AbstractPotion potion = AbstractDungeon.player.potions.get(potionIndex);
-		if (discard == 0) {
-			AbstractCreature target = AbstractDungeon.player;
-			if (monsterIndex != -1) {
-				target = AbstractDungeon.getMonsters().monsters.get(monsterIndex);
-				if (!LudicrousSpeedMod.plaidMode) {
-					String allMonsters = AbstractDungeon.getMonsters().monsters.stream().map(m -> String
-							.format("hp:%s\t", m.currentHealth)).collect(Collectors.joining());
-				}
-			}
-			potion.use(target);
-			AbstractDungeon.player.relics.forEach(relic -> relic.onUsePotion());
-		}
+        if (discard == 0) {
+            AbstractCreature target = AbstractDungeon.player;
+            if (monsterIndex != -1) {
+                target = AbstractDungeon.getMonsters().monsters.get(monsterIndex);
+                if (!LudicrousSpeedMod.plaidMode) {
+                    String allMonsters = AbstractDungeon.getMonsters().monsters.stream().map(m -> String
+                            .format("hp:%s\t", m.currentHealth)).collect(Collectors.joining());
+                }
+            }
+            potion.use(target);
+            AbstractDungeon.player.relics.forEach(relic -> relic.onUsePotion());
+        }
 
         AbstractDungeon.topPanel.destroyPotion(potionIndex);
 
